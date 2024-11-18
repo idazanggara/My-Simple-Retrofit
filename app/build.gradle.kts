@@ -56,7 +56,7 @@ dependencies {
     // implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
     // pastekan juga OkHttp untuk debugging request dan responsenya
     implementation("com.squareup.okhttp3:logging-interceptor:4.2.0")
-     implementation ("com.squareup.okhttp3:okhttp:4.2.1")
+    implementation ("com.squareup.okhttp3:okhttp:4.2.1")
 
     // room
     implementation ("androidx.room:room-runtime:2.6.1")
