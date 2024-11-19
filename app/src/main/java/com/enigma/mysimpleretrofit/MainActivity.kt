@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.enigma.mysimpleretrofit.databinding.ActivityMainBinding
 import com.enigma.mysimpleretrofit.databinding.DialogLoadingBinding
 import com.enigma.mysimpleretrofit.network.RetrofitInstance
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var apiService: ApiService
     private var loadingDialog: AlertDialog? = null
+    private lateinit var apiServiceMoshi: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,13 +36,34 @@ class MainActivity : AppCompatActivity() {
         }
 
         apiService = RetrofitInstance.apiService // ini gson
+        apiServiceMoshi = RetrofitInstance.apiServiceMoshi // ini Moshi
 
         binding.apply {
             btnGet.setOnClickListener {
                 getUser()
             }
+            btnGetById.setOnClickListener {
+                getUserByID()
+            }
         }
 
+    }
+
+    private fun getUserByID() {
+        // bisa pakai CoroutineScope atau ini
+        lifecycleScope.launch {
+            showLoading("Getting by ID, Please wait ...")
+            val id = "2" // ini bisa dinamis dari inputan
+            val result = apiServiceMoshi.getUserByID(id)
+            if(result.isSuccessful){
+                hideLoading()
+                Log.e("Yess, Get Data", "getUserByID() success ${result.body()?.data}")
+            }else {
+                hideLoading()
+                Log.e("Oh noo, Error in Get Data", "getUserByID() field: ${result.message()}")
+            }
+
+        }
     }
 
     private fun getUser() {
@@ -52,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e("Yess, Get Data", "getUser() success ${result.body()?.data}")
             }else {
                 hideLoading()
-                Log.e("Oh noo, Error i Get Data", "getUser() field: ${result.message()}")
+                Log.e("Oh noo, Error in Get Data", "getUser() field: ${result.message()}")
             }
         }
     }
