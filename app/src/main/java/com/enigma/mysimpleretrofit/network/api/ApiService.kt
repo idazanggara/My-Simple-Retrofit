@@ -2,7 +2,6 @@ package com.enigma.mysimpleretrofit.network.api
 
 import com.enigma.mysimpleretrofit.network.response.BaseResponse
 import com.enigma.mysimpleretrofit.network.response.BaseResponseMoshi
-import com.enigma.mysimpleretrofit.network.response.DataItem
 import com.google.gson.JsonObject
 import retrofit2.Response
 import retrofit2.http.Body

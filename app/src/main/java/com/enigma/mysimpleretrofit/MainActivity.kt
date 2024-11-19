@@ -13,6 +13,7 @@ import com.enigma.mysimpleretrofit.databinding.ActivityMainBinding
 import com.enigma.mysimpleretrofit.databinding.DialogLoadingBinding
 import com.enigma.mysimpleretrofit.network.RetrofitInstance
 import com.enigma.mysimpleretrofit.network.api.ApiService
+import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,14 +46,41 @@ class MainActivity : AppCompatActivity() {
             btnGetById.setOnClickListener {
                 getUserByID()
             }
+            btnUpdate.setOnClickListener {
+                updateUser()
+            }
         }
 
+    }
+
+    private fun updateUser() {
+        lifecycleScope.launch {
+            showLoading("Updating, Please wait ....")
+            // kedua data ini bisa dibuat dinamis dari inputan
+            val name = " Idaz Coding Delivery"
+            val job = "Mobile Developer"
+            val body = JsonObject().apply {
+                addProperty("name", name)
+                addProperty("job", job)
+            }
+            val id = "2"
+
+            val result = apiService.updateUser(id,body)
+            if (result.isSuccessful){
+                hideLoading()
+                Log.e("Yeay Update Data", "updateUser() success: ${result.body()}")
+            } else {
+                hideLoading()
+                Log.e("Oh noo, error in Update Data", "updateUser() field: ${result.message()}")
+            }
+
+        }
     }
 
     private fun getUserByID() {
         // bisa pakai CoroutineScope atau ini
         lifecycleScope.launch {
-            showLoading("Getting by ID, Please wait ...")
+            showLoading("Getting by ID, Please wait ....")
             val id = "2" // ini bisa dinamis dari inputan
             val result = apiServiceMoshi.getUserByID(id)
             if(result.isSuccessful){
@@ -68,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getUser() {
         CoroutineScope(Dispatchers.Main).launch {
-            showLoading("Getting, Please wait ...")
+            showLoading("Getting, Please wait ....")
             val result = apiService.getUser()
             if(result.isSuccessful){
                 hideLoading()
