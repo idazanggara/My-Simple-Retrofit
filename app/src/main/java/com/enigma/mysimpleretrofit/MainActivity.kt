@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getUser() {
         CoroutineScope(Dispatchers.Main).launch {
-            showLoading("Gettting, Please wait ...")
+            showLoading("Getting, Please wait ...")
             val result = apiService.getUser()
             if(result.isSuccessful){
                 hideLoading()
