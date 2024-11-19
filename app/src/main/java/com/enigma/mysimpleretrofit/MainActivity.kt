@@ -49,8 +49,25 @@ class MainActivity : AppCompatActivity() {
             btnUpdate.setOnClickListener {
                 updateUser()
             }
+            btnDelete.setOnClickListener {
+                deteleUser()
+            }
         }
 
+    }
+
+    private fun deteleUser() {
+        lifecycleScope.launch {
+            showLoading("Deleting, Please wait ....")
+            val id= "2"
+            val result = apiService.deleteUser(id)
+            if (result.isSuccessful){
+                Log.e("Yeay Delete Data","deleteUser success: ${result.body()}")
+            } else {
+                Log.e("Oh noo, error in Delete Data","deleteUser field: ${result.message()}")
+            }
+            hideLoading()
+        }
     }
 
     private fun updateUser() {
