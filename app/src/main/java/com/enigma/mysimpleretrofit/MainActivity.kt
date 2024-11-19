@@ -3,16 +3,21 @@ package com.enigma.mysimpleretrofit
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.enigma.mysimpleretrofit.adapters.RVAdapter
 import com.enigma.mysimpleretrofit.databinding.ActivityMainBinding
 import com.enigma.mysimpleretrofit.databinding.DialogLoadingBinding
 import com.enigma.mysimpleretrofit.network.RetrofitInstance
 import com.enigma.mysimpleretrofit.network.api.ApiService
+import com.enigma.mysimpleretrofit.network.response.DataItem
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +29,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var apiService: ApiService
     private var loadingDialog: AlertDialog? = null
     private lateinit var apiServiceMoshi: ApiService
+
+    // RecycleView
+    private lateinit var rvAdapter: RVAdapter
+    private lateinit var layoutManager: LayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
             btnGet.setOnClickListener {
                 getUser()
+                setUpRecycleView()
             }
             btnGetById.setOnClickListener {
                 getUserByID()
@@ -57,6 +67,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun setUpRecycleView() {
+        Log.e("Test","run recycle view")
+        rvAdapter = RVAdapter(arrayListOf(), object : RVAdapter.onAdapterListener{
+            override fun onClick(data: DataItem) {
+                Toast.makeText(this@MainActivity,"""
+                    Name : ${data.firstName} ${data.lastName} 
+                    Email : ${data.email}
+                    Avatar Url : ${data.avatar}
+                    """.trimIndent(), Toast.LENGTH_SHORT).show()
+            }
+
+        })
+
+        binding.rvMain.apply {
+            layoutManager = LinearLayoutManager(applicationContext)
+            adapter = rvAdapter
+        }
     }
 
     private fun createUser() {
@@ -140,6 +169,12 @@ class MainActivity : AppCompatActivity() {
             if(result.isSuccessful){
                 hideLoading()
                 Log.e("Yess, Get Data", "getUser() success ${result.body()?.data}")
+                // rvAdapter.setData(result.body() as List<DataItem>)
+                result.body()?.data?.filterNotNull()?.let { dataList ->
+                    rvAdapter.setData(dataList)
+                } ?: run {
+                    Log.e("Error", "Data is null")
+                }
             }else {
                 hideLoading()
                 Log.e("Oh noo, Error in Get Data", "getUser() field: ${result.message()}")
