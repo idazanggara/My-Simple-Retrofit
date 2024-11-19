@@ -52,8 +52,30 @@ class MainActivity : AppCompatActivity() {
             btnDelete.setOnClickListener {
                 deteleUser()
             }
+            btnPost.setOnClickListener {
+                createUser()
+            }
         }
 
+    }
+
+    private fun createUser() {
+        lifecycleScope.launch {
+            showLoading("Post, Please wait....")
+            val name = "Anggara"
+            val job = "JavaScript Developer"
+            val body = JsonObject().apply {
+                addProperty("name", name)
+                addProperty("job", job)
+            }
+            val result = apiService.createUser(body)
+            if (result.isSuccessful){
+                Log.e("Yeay Post Data","createUser success: ${result.body()}")
+            } else {
+                Log.e("Oh noo, error in Post Data","createUser field: ${result.message()}")
+            }
+            hideLoading()
+        }
     }
 
     private fun deteleUser() {
