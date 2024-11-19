@@ -3,26 +3,31 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.devtools.ksp")
+    id ("kotlin-parcelize")
 
 }
 
 android {
     namespace = "com.enigma.mysimpleretrofit"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.enigma.mysimpleretrofit"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
+        val baseUrl: String = project.property("BASE_URL") as String
+        buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     // Tambah disini
     buildFeatures{
         viewBinding = true
+        buildConfig = true // Aktifkan BuildConfig
     }
     // ---
 
@@ -53,7 +58,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation ("com.google.code.gson:gson:2.11.0")
-    // implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
     // pastekan juga OkHttp untuk debugging request dan responsenya
     implementation("com.squareup.okhttp3:logging-interceptor:4.2.0")
     implementation ("com.squareup.okhttp3:okhttp:4.2.1")
