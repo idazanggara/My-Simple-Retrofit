@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
             }
             btnGetById.setOnClickListener {
                 getUserByID()
+                setUpRecycleView()
             }
             btnUpdate.setOnClickListener {
                 updateUser()
@@ -150,13 +151,32 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             showLoading("Getting by ID, Please wait ....")
             val id = "2" // ini bisa dinamis dari inputan
-            val result = apiServiceMoshi.getUserByID(id)
-            if(result.isSuccessful){
+            try {
+                val result = apiServiceMoshi.getUserByID(id)
+                if (result.isSuccessful) {
+                    val data = result.body()?.data
+                    if (data != null) {
+                        // Mapping Data ke DataItem (sesuaikan properti)
+                        val dataItemList = listOf(
+                            DataItem(
+                                firstName = data.firstName,
+                                lastName = data.lastName,
+                                email = data.email,
+                                avatar = data.avatar
+                            )
+                        )
+                        rvAdapter.setData(dataItemList) // Konversi menjadi List<DataItem>
+                        Log.e("Yess, Get Data", "getUserByID() success: $dataItemList")
+                    } else {
+                        Log.e("Error", "Data is null")
+                    }
+                } else {
+                    Log.e("Oh noo, Error in Get Data", "getUserByID() field: ${result.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("Exception", "Error fetching user by ID: ${e.message}")
+            } finally {
                 hideLoading()
-                Log.e("Yess, Get Data", "getUserByID() success ${result.body()?.data}")
-            }else {
-                hideLoading()
-                Log.e("Oh noo, Error in Get Data", "getUserByID() field: ${result.message()}")
             }
 
         }
